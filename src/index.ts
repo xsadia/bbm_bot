@@ -2,13 +2,7 @@ import axios from "axios";
 import OAuth from "oauth-1.0a";
 import dotenv from "dotenv";
 import crypto from "crypto";
-import { time } from "console";
 dotenv.config();
-
-// type OAuthTokenResponse = {
-//   oauth_token: string;
-//   oauth_token_secret: string;
-// };
 
 type Tweet = {
   id: string;
@@ -98,28 +92,32 @@ async function main() {
     const tweets = response.data;
 
     tweets.data.forEach(async (tweet) => {
-      const likeResponse = await axios.post(
-        endpointURL,
-        {
-          tweet_id: tweet.id,
-        },
-        {
-          headers: {
-            Authorization: likeauthHeader["Authorization"],
-            "content-type": "application/json",
-            accept: "application/json",
+      try {
+        const likeResponse = await axios.post(
+          endpointURL,
+          {
+            tweet_id: tweet.id,
           },
+          {
+            headers: {
+              Authorization: likeauthHeader["Authorization"],
+              "content-type": "application/json",
+              accept: "application/json",
+            },
+          }
+        );
+
+        if (likeResponse.data.data.liked) {
+          requestsMade++;
+          console.log(`Liked tweet of id [${tweet.id}]`);
+          return;
         }
-      );
 
-      if (likeResponse.data.data.liked) {
-        requestsMade++;
-        console.log(`Liked tweet of id [${tweet.id}]`);
+        console.log(`Failed to like tweet of id [${tweet.id}]`);
         return;
+      } catch (e) {
+        console.log(e);
       }
-
-      console.log(`Failed to like tweet of id [${tweet.id}]`);
-      return;
     });
 
     await sleep(15 * 60 * 1000);
