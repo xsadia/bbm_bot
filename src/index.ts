@@ -29,9 +29,12 @@ const queryOptions = [
   "pele oleosa",
   "pele mista",
   "pele ressecada",
-  "cravos",
-  "neutrogena",
+  "meu perfume",
+  "pele glow",
   "cuidar da pele",
+  "lavar o rosto",
+  "vitamina C rosto",
+  "hidratar cabelo",
 ];
 
 function sleep(ms: number) {
@@ -94,46 +97,32 @@ async function main() {
 
     const tweets = response.data;
 
-    const likeResponse = await axios.post(
-      endpointURL,
-      {
-        tweet_id: tweets.data[0].id,
-      },
-      {
-        headers: {
-          Authorization: likeauthHeader["Authorization"],
-          "content-type": "application/json",
-          accept: "application/json",
+    tweets.data.forEach(async (tweet) => {
+      const likeResponse = await axios.post(
+        endpointURL,
+        {
+          tweet_id: tweet.id,
         },
+        {
+          headers: {
+            Authorization: likeauthHeader["Authorization"],
+            "content-type": "application/json",
+            accept: "application/json",
+          },
+        }
+      );
+
+      if (likeResponse.data.data.liked) {
+        requestsMade++;
+        console.log(`Liked tweet of id [${tweet.id}]`);
+        return;
       }
-    );
 
-    // tweets.data.forEach(async (tweet) => {
-    //   const likeResponse = await axios.post(
-    //     endpointURL,
-    //     {
-    //       tweet_id: tweet.id,
-    //     },
-    //     {
-    //       headers: {
-    //         Authorization: likeauthHeader["Authorization"],
-    //         "content-type": "application/json",
-    //         accept: "application/json",
-    //       },
-    //     }
-    //   );
+      console.log(`Failed to like tweet of id [${tweet.id}]`);
+      return;
+    });
 
-    //   if (likeResponse.data.liked) {
-    //     requestsMade++;
-    //     console.log(`Liked tweet of id [${tweet.id}]`);
-    //     return;
-    //   }
-
-    //   console.log(`Failed to like tweet of id [${tweet.id}]`);
-    //   return;
-    // });
-
-    // await sleep(15 * 60 * 1000);
+    await sleep(15 * 60 * 1000);
   }
 }
 
