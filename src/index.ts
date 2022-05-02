@@ -75,6 +75,7 @@ async function main() {
 
       await sleep(sleepTime);
       requestsMade = 0;
+      console.log("1000 requests made... Sleeping until 00:00.");
       continue;
     }
 
