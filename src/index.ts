@@ -108,6 +108,16 @@ async function main() {
           }
         );
 
+        if (response.status === 429) {
+          let diff = Date.now() - new Date().setHours(0, 0, 0, 0);
+          let diffHours = 24 - Math.floor(diff / (1000 * 60 * 60));
+          let sleepTime = diffHours * 60 * 60 * 1000;
+
+          await sleep(sleepTime);
+          requestsMade = 0;
+          console.log("1000 requests made... Sleeping until 00:00.");
+        }
+
         if (likeResponse.data.data.liked) {
           requestsMade++;
           console.log(`Liked tweet of id [${tweet.id}]`);
